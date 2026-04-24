@@ -26,3 +26,4 @@ python3 evolution_simulator.py
 ## Requirements
 - Python 3.10+
 - Tkinter (usually included with standard Python installations)
+- also has a few other thing but this is the " main " thing.
