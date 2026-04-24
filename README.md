@@ -1,20 +1,17 @@
-# Evolution Simulator (Python GUI)
+# Virus Spread Simulator (Python GUI)
 
-A visually polished **evolution simulator** built with Python + Tkinter.
+A visually polished **virus spread simulator** built with Python + Tkinter.
 
 ## What it does
-- Spawns little creatures that move with randomized behavior.
-- Creatures follow simple survival rules:
-  - search for food,
-  - spend energy to move,
-  - die if they run out of energy,
-  - reproduce when they have enough energy.
-- Offspring inherit parent traits with mutation, so average behavior evolves over time.
-
-## Evolution concepts included
-- Randomness (movement jitter, mutation noise)
-- Natural selection (survivors reproduce more)
-- Emergent adaptation of traits such as speed, perception, fertility, and metabolism
+- Simulates a moving population where infection can spread by close contact.
+- Uses an SIR-style model with three health states:
+  - Susceptible (blue),
+  - Infected (red),
+  - Recovered (green).
+- Lets you adjust:
+  - infection rate,
+  - recovery rate.
+- Helps you watch outbreak patterns emerge in real time.
 
 ## Run it
 ```bash
@@ -24,6 +21,7 @@ python3 evolution_simulator.py
 ## Controls
 - `SPACE` → pause/resume simulation
 - `R` → reset world
+- Sliders on the right panel adjust infection and recovery rates live.
 
 ## Requirements
 - Python 3.10+
