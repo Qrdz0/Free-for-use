@@ -1,44 +1,202 @@
-# Virus Spread Simulator (Python GUI)
+# PyDialogue
 
-A visually polished **virus spread simulator** built with Python + Tkinter.
+PyDialogue is a reusable, beginner-friendly dialogue system for Python games.
+It lets you build branching conversations with JSON files and run them in terminal games, pygame projects, RPGs, and visual novels.
 
-## What it does
-- Simulates a moving population where infection can spread by close contact.
-- Uses an SIR-style model with three health states:
-  - Susceptible (blue),
-  - Infected (red),
-  - Recovered (green).
-- Lets you adjust:
-  - infection rate,
-  - recovery rate.
-- Helps you watch outbreak patterns emerge in real time.
+## Features
 
-## Run it
+- JSON-based dialogue authoring
+- Branching choices with next-node routing
+- Conditions (variables, inventory, quest checks)
+- Effects (state updates, items, quests, conversation end)
+- Dialogue file validation with clear errors
+- Terminal demo included
+- Typed, dataclass-based, easy-to-extend code
+
+## Installation
+
+### Local project clone
+
 ```bash
-python3 evolution_simulator.py
+git clone <your-repo-url>
+cd PyDialogue
+python -m venv .venv
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
+pip install -e .
 ```
 
-## Controls
-- `SPACE` → pause/resume simulation
-- `R` → reset world
-- Sliders on the right panel adjust infection and recovery rates live.
+### Install test dependencies
 
-## Requirements
-- Python 3.10+
-- Tkinter (usually included with standard Python installations)
-- also has a few other thing but this is the " main " thing.
-
-
-## Bonus: Aim Trainer Game (Advanced)
-A fast-paced click trainer with random targets, reaction-time analytics, combo scoring, and multiple difficulty levels.
-
-### Features
-- Random target spawning with timed despawn penalties.
-- Real-time reaction tracking (average and best in ms).
-- Accuracy, streaks, score multipliers, and post-round grading.
-- Difficulty presets: Easy, Medium, Hard, Insane.
-
-### Run
 ```bash
-python3 aim_trainer_game.py
+pip install -e .[dev]
 ```
+
+## Quick Start
+
+```python
+from pydialogue import DialogueEngine
+
+engine = DialogueEngine("examples/guard_dialogue.json")
+game_state = {
+    "reputation": 0,
+    "npc_trust": 0,
+    "items": set(),
+    "active_quests": set(),
+    "completed_quests": set(),
+}
+
+engine.start("intro")
+
+current = engine.get_current_node()
+print(current.speaker, current.text)
+
+choices = engine.get_available_choices(game_state)
+for i, choice in enumerate(choices):
+    print(i, choice.text)
+
+engine.choose(0, game_state)
+```
+
+## JSON Dialogue Format
+
+```json
+{
+  "start_node": "intro",
+  "nodes": {
+    "intro": {
+      "speaker": "Guard",
+      "text": "Halt! What business do you have here?",
+      "choices": [
+        {
+          "text": "I need to enter the city.",
+          "next": "ask_reason",
+          "effects": {"reputation": 1}
+        },
+        {
+          "text": "None of your business.",
+          "next": "angry",
+          "effects": {"reputation": -1}
+        }
+      ]
+    }
+  }
+}
+```
+
+### Choice fields
+
+Each choice supports:
+
+- `text` (required): what the player sees
+- `next` (optional if ending): next node ID
+- `conditions` (optional): list of condition objects
+- `effects` (optional): list of effect objects, or shorthand object for variable updates
+- `end_conversation` (optional): `true` to end immediately
+
+## Condition Examples
+
+Supported condition types:
+
+- `equals`
+- `not_equals`
+- `greater_than`
+- `less_than`
+- `has_item`
+- `quest_active`
+- `quest_completed`
+
+```json
+[
+  {"type": "greater_than", "variable": "reputation", "value": 2},
+  {"type": "has_item", "item": "city_pass"},
+  {"type": "quest_completed", "quest": "rat_problem"}
+]
+```
+
+## Effect Examples
+
+Supported effect types:
+
+- `set`
+- `add`
+- `add_item`
+- `remove_item`
+- `start_quest`
+- `complete_quest`
+- `end_conversation`
+
+```json
+[
+  {"type": "add", "variable": "reputation", "value": 1},
+  {"type": "add_item", "item": "city_pass"},
+  {"type": "start_quest", "quest": "sick_child"}
+]
+```
+
+Shorthand for simple variable updates is also supported:
+
+```json
+{"reputation": 1, "quest_started": true}
+```
+
+## Terminal Demo
+
+Run the included guard conversation demo:
+
+```bash
+python examples/terminal_demo.py
+```
+
+It demonstrates:
+
+- Branching choices
+- Reputation and NPC trust updates
+- Item rewards
+- Quest start outcomes
+
+## pygame Integration Example
+
+```python
+from pydialogue import DialogueEngine
+
+engine = DialogueEngine("dialogues/guard.json")
+state = {
+    "reputation": 0,
+    "items": set(),
+    "active_quests": set(),
+    "completed_quests": set(),
+}
+engine.start()
+
+# In your game loop / dialogue UI:
+node = engine.get_current_node()
+render_text_box(f"{node.speaker}: {node.text}")
+choices = engine.get_available_choices(state)
+render_choice_buttons([c.text for c in choices])
+
+# When player clicks a button:
+selected_index = get_clicked_choice_index()
+engine.choose(selected_index, state)
+```
+
+## Validation
+
+PyDialogue validates files when loading:
+
+- Missing `start_node`
+- Broken `next` links
+- Missing required node/choice fields
+- Invalid condition formats
+- Invalid effect formats
+
+If invalid, a `DialogueValidationError` is raised with a clear message.
+
+## Tests
+
+```bash
+pytest
+```
+
+## License
+
+MIT License. See [LICENSE](LICENSE).

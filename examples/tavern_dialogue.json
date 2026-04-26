@@ -1,0 +1,54 @@
+{
+  "start_node": "welcome",
+  "nodes": {
+    "welcome": {
+      "speaker": "Innkeeper",
+      "text": "Welcome to the Copper Mug. Need a room or a rumor?",
+      "choices": [
+        {
+          "text": "Any rumors around town?",
+          "next": "rumor",
+          "effects": [{"type": "add", "variable": "reputation", "value": 1}]
+        },
+        {
+          "text": "A room, please.",
+          "next": "room",
+          "conditions": [{"type": "has_item", "item": "gold_coin"}]
+        },
+        {
+          "text": "Goodbye.",
+          "end_conversation": true,
+          "effects": [{"type": "end_conversation"}]
+        }
+      ]
+    },
+    "rumor": {
+      "speaker": "Innkeeper",
+      "text": "People say smugglers hide near the old bridge.",
+      "choices": [
+        {
+          "text": "Thanks for the tip.",
+          "end_conversation": true,
+          "effects": [
+            {"type": "start_quest", "quest": "old_bridge_smugglers"},
+            {"type": "end_conversation"}
+          ]
+        }
+      ]
+    },
+    "room": {
+      "speaker": "Innkeeper",
+      "text": "One coin for the night. Sleep well.",
+      "choices": [
+        {
+          "text": "Pay and rest.",
+          "end_conversation": true,
+          "effects": [
+            {"type": "remove_item", "item": "gold_coin"},
+            {"type": "end_conversation"}
+          ]
+        }
+      ]
+    }
+  }
+}

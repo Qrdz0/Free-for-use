@@ -1,0 +1,76 @@
+{
+  "start_node": "intro",
+  "nodes": {
+    "intro": {
+      "speaker": "Guard",
+      "text": "Halt! What business do you have here?",
+      "choices": [
+        {
+          "text": "I need to enter the city.",
+          "next": "ask_reason",
+          "effects": {"reputation": 1}
+        },
+        {
+          "text": "None of your business.",
+          "next": "angry",
+          "effects": {"reputation": -1, "npc_trust": -1}
+        }
+      ]
+    },
+    "ask_reason": {
+      "speaker": "Guard",
+      "text": "And why should I trust you?",
+      "choices": [
+        {
+          "text": "I'm here to deliver medicine.",
+          "next": "reward_pass",
+          "effects": [
+            {"type": "add", "variable": "npc_trust", "value": 1},
+            {"type": "add_item", "item": "city_pass"},
+            {"type": "start_quest", "quest": "sick_child"}
+          ]
+        },
+        {
+          "text": "Because I said so.",
+          "next": "angry",
+          "effects": [{"type": "add", "variable": "npc_trust", "value": -1}]
+        },
+        {
+          "text": "Never mind.",
+          "end_conversation": true,
+          "effects": [{"type": "end_conversation"}]
+        }
+      ]
+    },
+    "reward_pass": {
+      "speaker": "Guard",
+      "text": "Very well. Take this city pass, and see the healer quickly.",
+      "choices": [
+        {
+          "text": "Thank you.",
+          "end_conversation": true,
+          "effects": [{"type": "end_conversation"}]
+        }
+      ]
+    },
+    "angry": {
+      "speaker": "Guard",
+      "text": "Watch your tongue. You're not entering today.",
+      "choices": [
+        {
+          "text": "Leave.",
+          "end_conversation": true,
+          "effects": [{"type": "end_conversation"}]
+        },
+        {
+          "text": "Apologize politely.",
+          "next": "intro",
+          "conditions": [
+            {"type": "greater_than", "variable": "reputation", "value": -3}
+          ],
+          "effects": [{"type": "add", "variable": "reputation", "value": 1}]
+        }
+      ]
+    }
+  }
+}
